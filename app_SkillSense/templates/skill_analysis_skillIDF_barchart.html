@@ -1,0 +1,355 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+
+<title>SkillSense</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='current/css/normalize.css') }}" />
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='current/css/style.css') }}" />
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='current/css/slidein/style.css') }}" />
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='current/css/style_edit.css') }}" />
+	<!-- <link href="css/form.css" rel="stylesheet" type="text/css"> -->
+    <script src="https://use.fontawesome.com/b4d97f0552.js"></script>
+	<script src="{{ url_for('static',filename='current/js/modernizr.js') }}"></script> <!-- Modernizr -->
+</head>
+<style type="text/css">
+    .ui-autocomplete { font-size: 10px; max-height: 500px; overflow-y: auto; overflow-x: hidden;}  
+
+    .header .cola { width: 15%; }
+    .header .colb { width: 40%; }
+    .navi ul li { width: 25%; }
+    .form-row input {
+        color: #5f5f5f;
+        box-sizing: border-box;
+        /* width: 230px; */
+        width: -webkit-fill-available;
+        box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.08);
+        padding: 12px 18px;
+        border: 1px solid #dbdbdb;
+    }
+    .div_skill { width: 200px; margin: auto; }
+    .form-row button {
+        display: block;
+        border-radius: 2px;
+        background: unset;
+        background-color: #4c565e;
+        color: #ffffff;
+        font-weight: bold;
+        box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.08);
+        padding: 15px 35px;
+        border: 0;
+        margin: 25px auto 0;
+        cursor: pointer;
+    }
+    .ctnCenter{
+        width: 100%;
+        display: inline-block;
+        vertical-align: top;
+    }
+    .row {
+        width: 100%;
+        display: inline-block;
+        vertical-align: top;
+    }
+    .row.search {
+        background-color: #dedede;
+    }
+    .row.summary {
+        background-color: #dedede;
+    }
+    .row .padding {
+        min-height: 200px;
+        padding: 20px;
+    }
+    .col_half {
+        height: 100%;
+        width: 33.3%;
+        min-height: 200px;
+        display: inline-block;
+        float: left;
+    }
+    .skills_chart_text:hover{ font-weight: bold; }
+    .skills_chart_text_selected{ font-weight: bold; fill: blue;}
+</style>
+<body>
+<div class="maincontainer">
+	<div class="topcontainer header">
+		<div class="col cola">
+			<div class="padding logo skillsense">
+				<a href="{{ url_for('home') }}"><img src="{{ url_for('static',filename='current/images/logo2.png') }}" alt="SkillSense Logo Here"/></a>
+			</div>
+		</div><!-- Logo --><div class="col colb">
+		<div class="navi">
+			<ul>
+				<!-- <a href="javascript:navigateGraph('category')"><li class="con_t tcategory"><div class="padding">Job Category Analysis</div>
+				</li></a><a href="javascript:navigateGraph('role')"><li class="con_t trole"><div class="padding">Job Role Analysis</div>
+				</li></a><a href="javascript:navigateGraph('skill_group')"><li class="con_t tskill_group"><div class="padding">Skill Group Analysis</div>
+				</li></a><a href="javascript:navigateGraph('skill')"><li class="con_t tskill"><div class="padding">Skills Analysis</div>
+                </li></a> -->
+			</ul>
+		</div>
+		</div><!-- Col b / Search --><div class="col colc" id="th_slider" style="display: none;"><div class="padding">
+		  <div class="scoretxt">Weights Threshold:</div>
+			<!-- <img src="images/bar.jpg" style="width: 100%;" alt=""/> -->
+			<div class="range_new">                
+                <input type="range" name="points" id="thresholdSlider" step="0.006" value="0.5" min="1" max="0.06" 
+                    onchange="filterTH(this.value)">
+                <output id="sliderval">#</output>
+            </div>
+		</div></div><div class="col cold logo2"><img src="{{ url_for('static',filename='current/images/logo.png') }}" alt=""/></div>
+	</div><!-- Top Container -->
+	<div class="bottomcontainer" id="content">
+		<div class="row search">
+    		<div class="padding">
+    		<!-- <a href="#0" class="cd-btn">Open Window</a>
+    		<a href="#0" class="cd-btn2">Open Window2</a> -->
+        		<p style="text-align: center;"> The skills bar charts shows before and after muliplication of IDF of skills.
+                    Each skills are then assigned to only one skill group. </p>
+				<h1><em><text id="graph_header"></text></em></h1> 
+                <div class="searchby_content div_skill display_block" style="opacity: 1;">
+                    <div class="form-row">
+                        <input id="search_sg" type="text" name="name" placeholder="Enter Skill Group" class="ui-autocomplete-input" autocomplete="off">
+                    </div>
+                    <div class="form-row form-last-row">
+                        <button id="button_sg" type="submit" class="width_fill" href="">Search</button>
+                    </div>
+                </div>
+	    	</div>
+		</div>
+        <div class="row calc_result">
+            <div class="padding">
+                <h1><em><text id="graph_header"></text></em></h1> 
+                <h2 style="text-align: center;"><span id="skill_group_title"></span><span id="skill_group_title_id" style="color: green;"></span></h2>
+                <!-- <img src="images/jobrole.png" width="784" height="601" alt=""/> -->
+                <div class="col_half"><h2 style="text-align: center;margin: 0px"><span id="skill_group_title_bef"></span></h2>
+                    <div class="padding skills_chart_bef"><svg class="skills_bar_bef" width="480" height="480"></svg></div>
+                </div>
+                <div class="col_half"><h2 style="text-align: center;margin: 0px"><span id="skill_group_title_aft"></span></h2>
+                    <div class="padding skills_chart_aft"><svg class="skills_bar_aft" width="480" height="480"></svg></div>
+                </div>
+                <div class="col_half"><h2 style="text-align: center;margin: 0px"><span id="skill_group_title_opt"></span></h2>
+                    <div class="padding skills_chart_opt"><svg class="skills_bar_opt" width="480" height="480"></svg></div>
+                </div>
+            </div>
+        </div>
+        <div class="row summary">
+            <div class="padding">
+                <p style="text-align: center;"><b> Summary of number of skills represented in each group. (After one skill assigned to one group) (Total <span id="summary_g_no"></span> groups)</b></p>
+                <div class="skills_chart_summary"><svg class="skills_bar_summary" width="950" height="880"></svg></div>
+            </div>
+        </div>
+        
+		<!-- insert button here -->
+		<button onclick="topFunction()" id="backtopBtn" title="Go to top">Top</button>
+	</div><!-- Bottom Container -->
+	
+</div>
+	<div class="cd-panel from-right">
+		<header class="cd-panel-header header1">
+			<h1>Skill Group</h1>
+			<a href="#0" class="cd-panel-close closebtn" id="close">Close</a>
+		</header>
+
+		<div class="cd-panel-container cdcontainer1">
+			<div class="cd-panel-content">
+				<!-- <h2>Human Resource, Human Resource Management, Payroll, Resource Management, Human Resources</h2> -->
+				<h2><span id="skill_group_title"></span></h2>
+		    	<!-- <img src="images/graph2.jpg" width="412" height="363" alt=""/> --> </div> <!-- cd-panel-content -->
+		    	<!-- <div id="skills_chart"> -->
+                    <br><br><!-- <button style="float: left;" title="Back to overall view" onclick="escapeDetailedView()">Hide</button> --><br>
+                    <!-- <label><br><span id="skill_group_title"></span></label> -->
+                    
+                    <br>
+                <!-- </div> -->
+		</div> <!-- cd-panel-container -->
+	</div> <!-- cd-panel -->
+	
+	<div class="cd-panel2 from-left">
+		<header class="cd-panel-header header2">
+			<h1>Skill Group</h1>
+			<a href="#0" class="cd-panel-close closebtn" id="close1">Close</a>
+		</header>
+
+		<div class="cd-panel-container cdcontainer2">
+			<div class="cd-panel-content"><a href="#0" class="cd-btn3">Open Window3</a>
+				<h2>Human Resource, Human Resource Management, Payroll, Resource Management, Human Resources</h2>
+		    <!-- <img src="images/graph2.jpg" width="412" height="363" alt=""/> --> </div> <!-- cd-panel-content -->
+		</div> <!-- cd-panel-container -->
+	</div> <!-- cd-panel -->
+	
+	<div class="cd-panel2 from-left">
+		<header class="cd-panel-header header3">
+			<h1>Skill Group</h1>
+			<a href="#0" class="cd-panel-close closebtn" id="close2">Close</a>
+		</header>
+
+		<div class="cd-panel-container cdcontainer3">
+			<div class="cd-panel-content">
+				<h2>Human Resource, Human Resource Management, Payroll, Resource Management, Human Resources 123</h2>
+		    	<!-- <img src="images/graph2.jpg" width="412" height="363" alt=""/> --> 
+		   	</div> <!-- cd-panel-content -->
+		</div> <!-- cd-panel-container -->
+	</div> <!-- cd-panel -->
+	
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<script src="{{ url_for('static',filename='current/js/main.js') }}"></script> <!-- Resource jQuery -->
+<script src="http://d3js.org/d3.v4.min.js"></script>
+<script src="http://vizjs.org/viz.v1.1.0.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='d3.layout.cloud.js') }}"></script>
+<script type="text/javascript">
+//******************************************//
+//                                          //
+//              SKILLS BAR CHART            //
+//                                          //
+//******************************************//
+function drawSKillsBar(container, sort, val_type, data){
+    //clear previous
+    $(".skills_bar_"+container).html("");
+    $("#skills-g-"+container).remove();
+    $("#toolTip_"+container).remove();
+
+    // console.log("skills data:", data);
+    //sort bars based on value
+    var svg = d3.select("svg.skills_bar_"+container)
+        // .attr("opacity", 0)
+        .style("margin-left", "auto")
+        .style("margin-right", "auto")
+        .style("position", "relative")
+        .style("display", "block")
+        .style("background-color", "white");
+
+    if (val_type == "int"){ var margin = {top: 15, right: 50, bottom: 30, left: 550}; }
+    else { var margin = {top: 15, right: 50, bottom: 30, left: 180}; }
+
+    var width = +svg.attr("width") - margin.left - margin.right,
+        height = + svg.attr("height") - margin.top - margin.bottom;
+  
+    var tooltip = d3.select(".skills_chart_"+container).append("div").attr("id", "toolTip_"+container).attr("class", "toolTip");
+      
+    var x = d3.scaleLinear().range([0, width]);
+    var y = d3.scaleBand().range([height, 0]);
+
+    var g = svg.append("g")
+        .attr("id", "skills-g-"+container)
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    if (sort == "desc"){ data.sort(function(a, b) { return a.value - b.value; }); }
+    else if (sort == "asc"){ data.sort(function(a, b) { return b.value - a.value; }); }
+
+    x.domain([0, d3.max(data, function(d) { return d.value; })]);
+    y.domain(data.map(function(d) { return d.name; })).padding(0.1);
+
+    g.append("g")
+        .attr("class", "y axis")
+        .call(d3.axisLeft(y));
+    var labels = g.selectAll("g.tick").select("text")
+        .attr("font-size", "11px")
+        .attr("class", "skills_chart_text");
+
+    if (val_type == "int"){
+        labels.on("click", function(t){
+            svg.selectAll(".skills_chart_text").classed("skills_chart_text_selected", false);
+            d3.select(this).classed("skills_chart_text_selected", true);
+            initGraph(t);
+        });
+    }
+
+    g.selectAll(".bar")
+        .data(data)
+      .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", 0)
+        .attr("height", y.bandwidth())
+        .attr("y", function(d) { return y(d.name); })
+        .attr("width", function(d) { return x(d.value); })
+        .on("mousemove", function(d){
+            tooltip
+              .style("left", d3.event.pageX -50 + "px")
+              .style("top", d3.event.pageY -130 + "px")
+              .style("display", "inline-block");
+            if (val_type == "int"){
+                tooltip.html((d.name) + "<br>" + (d.value));
+            }
+            else {
+                tooltip.html((d.name) + "<br>" + (d.value).toFixed(3));
+            }
+        })
+        .on("mouseout", function(d){ tooltip.style("display", "none");});
+
+    // add text label
+    svg.selectAll("text.labels")
+        .data(data)
+      .enter().append("text")
+        .text(function(d){ if (val_type == "float") {return d.value.toFixed(3) }
+                            else { return d.value }  })
+        .style("text-anchor","start")
+        .attr("x", function(d){ 
+            if(val_type=="int"){
+                return x(d.value) + 555 
+            } else { return x(d.value) + 185 }  
+        })
+        .attr("y", function(d){ return y(d.name) + 27 })
+        .style("fill", "black");
+
+    // d3.select("#skills_chart").attr("visibility", "visible");
+    // d3.select("#skills_chart").style("display", "block");
+    // svg.attr("display", "block");
+    // svg.transition().duration(750).attr("opacity", 1);
+}
+</script>
+<script type="text/javascript">
+var DATA_URL = '/data/';
+var skillgp_list = {{ sg_list|safe }};
+
+function initGraph(skill_group){
+    $('#skill_group_title').text(skill_group);
+    $.get(DATA_URL + 'skills_barchart/' + skill_group, function(bar_chart_data){
+        $('#skill_group_title_bef').text('before IDF (top '+bar_chart_data.length+')');
+        drawSKillsBar("bef", "desc", "float", bar_chart_data);
+    });
+    $.get(DATA_URL + 'skills_barchartIDF/' + skill_group, function(bar_chart_data){
+        $('#skill_group_title_aft').text("after IDF (top "+bar_chart_data.length+")");
+        drawSKillsBar("aft", "desc", "float", bar_chart_data);
+    });
+    $.get(DATA_URL + 'skills_barchartOneRep/' + skill_group, function(bar_chart_data){
+        $('#skill_group_title_opt').text("after assign one skill to only one skill group (top "+bar_chart_data[1].length+", Max "+bar_chart_data[2]+")");
+        $('#skill_group_title_id').text(" dictionary_id="+bar_chart_data[0]);
+        drawSKillsBar("opt", "desc", "float", bar_chart_data[1]);
+    });
+}
+
+$(function () {
+    var input_sg = document.getElementById("search_sg");
+    $("#search_sg").change(function(d){
+        if ($.inArray(capitalize_Words($('#search_sg').val()), skillgp_list) < 0) {
+            input_sg.setCustomValidity("Invalid Skill Group Entered!");
+          } else {
+            input_sg.setCustomValidity("");
+          }
+    });
+    $("#search_sg").autocomplete({
+        source: skillgp_list })
+    $("#button_sg").click(function(d){
+        initGraph($('#search_sg').val());
+        // window.location.href = WIN_URL + '' + $('#rel_type').val() +'='+ $('#search_sg').val();
+    });
+});
+
+// summary
+$.get(DATA_URL + 'skills_barchart/summary/', function(bar_chart_data){
+    $("#summary_g_no").text(bar_chart_data.length);
+    drawSKillsBar("summary", "asc", "int", bar_chart_data);
+});
+
+//capitalize_Words 
+function capitalize_Words(str){
+    return str.replace(/\b\w+/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+
+initGraph("Java, Javascript, Sql, Web, J2Ee"); //temporary
+</script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+
+<title>SkillSense | Homepage</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='current/css/normalize.css') }}" />
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='current/css/homepage.css') }}" />
+	<link href="{{ url_for('static',filename='current/css/tab/style2.css') }}" rel="stylesheet" type="text/css">
+	<link href="{{ url_for('static',filename='current/css/form.css') }}" rel="stylesheet" type="text/css">
+    <script src="https://use.fontawesome.com/b4d97f0552.js"></script>
+    
+		<script type="text/javascript" src="{{ url_for('static',filename='current/css/tab/modernizr.custom.04022.js') }}"></script>
+</head>
+
+<body>
+	<div class="toplogo">
+		<a href="https://www.smu.edu.sg/" target="_blank" title="SMU"><img src="{{ url_for('static',filename='current/images/logo-smu.png') }}" alt="SMU"/></a><a href="https://larc.smu.edu.sg/" target="_blank" title="LARC"><img src="{{ url_for('static',filename='current/images/logo-larc.png') }}" alt="LARC"/></a>
+	</div>
+<div class="maincontainer">
+	<div class="homecontainer">
+			
+				<img src="{{ url_for('static',filename='current/images/logo3.png') }}" class="logo" alt="SkillSense Logo" title="Job Analytics">
+		<div class="shadow"></div>
+			<div class="topcontainer">
+				<a href="{{ url_for('skill_analysisbPHTML', rel_type='category') }}">
+				<div class="box odd">
+					<div class="padding">
+						<h1>Job Category Analysis</h1>
+						<!-- <p>Analyse the association of different Job Categories (e.g. Information Technology/ Administration) to Groups of Skills required for the Job Category</p> -->
+						<p>Identify the Skill Groups associated to different Job Categories.(e.g. Information Technology/ Administration)</p>
+					</div>
+				</div></a><a href="{{ url_for('skill_analysisbPHTML', rel_type='role') }}"><div class="box even">
+					<div class="padding">
+						<h1>Job Role Analysis</h1>
+						<!-- <p>Analyse the association of Job Roles (e.g. Analyst/ Director) to Groups of Skills required for the Job Role</p> -->
+						<p>Identify the Skill Groups associated to different Job Roles. (e.g. Analyst/ Director)</p>
+					</div>
+				</div></a><a href="{{ url_for('skill_analysisbPHTML', rel_type='skill_group') }}"><div class="box odd2">
+					<div class="padding">
+						<h1>Skill Group Analysis</h1>
+						<p>Analyse and visualising relationships between Groups of SKills.<br>Also shows how different Skills are related to each other</p>
+					</div>
+				</div></a>
+				<div class="clearboth"></div>
+			</div>
+	</div>
+			<div class="bottomcontainer">
+			  <div class="or"> OR</div>
+            	<div style="padding: 20px 0 0px 0"><h2>Search by</h2></div>
+				<section class="tabs">
+				<form class="contact_form" action="{{ url_for('relTypeSearchForm') }}" method="post" name="contact_form">
+	            <input id="tab-1" type="radio" name="radio-set" value="category" class="tab-selector-1" checked="checked" />
+		        <label for="tab-1" class="tab-label-1">Job Category</label>
+		
+	            <input id="tab-2" type="radio" name="radio-set" value="role" class="tab-selector-2" />
+		        <label for="tab-2" class="tab-label-2">Job Role</label>
+		
+	            <input id="tab-3" type="radio" name="radio-set" value="skill_group" class="tab-selector-3" />
+		        <label for="tab-3" class="tab-label-3">Skill Group</label>
+			
+			    <div class="clear-shadow"></div>
+		        <div class="content">
+		        
+			        <div class="content-1"><br>
+						<input id="search_cat" name="category_field" type="text" placeholder="Enter Job Category"  /><br>
+						<button id="button_cat" class="btnnext" href="">Search</button>
+				    </div><div class="content-2">
+						<br>
+						<input id="search_role" name="role_field" type="text" placeholder="Enter Job Role"  /><br>
+						<button id="button_role" class="btnnext" href="">Search</button>
+				    </div><div class="content-3">
+						<br>
+						<input id="search_sg" name="sg_field" type="text" placeholder="Enter Skill Group"  /><br>
+						<div class="form-row">
+                            <select id="rel_type" name="dropdown" class="dropdown">
+                                <option value="None">--Choose a relation type--</option>
+                                <option value="category" selected="">Job Category Analysis</option>
+                                <option value="role">Job Role Analysis</option>
+                                <option value="skill_group">Skill Group Analysis</option>
+                            </select>
+	                    </div>
+						<button id="button_sg" class="btnnext" href="">Search</button>
+				    </div>
+				</form>
+		        </div>
+			</section>
+			</div>
+</div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<script type="text/javascript">
+var WIN_URL = '/';
+
+var skillgp_list = {{ sg_list|safe }};
+var skill_list = {{ skill_list|safe }};
+var domain_list = {{ domain_list|safe }};
+var function_list = {{ function_list|safe }};
+
+$(function () {
+    var input_sg = document.getElementById("search_sg");
+    $("#search_sg").change(function(d){
+        if ($.inArray(capitalize_Words($('#search_sg').val()), skillgp_list) < 0) {
+            input_sg.setCustomValidity("Invalid Skill Group Entered!");
+          } else {
+            input_sg.setCustomValidity("");
+          }
+    });
+    $("#search_sg").autocomplete({
+        source: skillgp_list })
+    // $("#button_sg").click(function(d){
+    //     window.location.href = WIN_URL + 'skill_analysis/' + $('#rel_type').val() +'='+ $('#search_sg').val();
+    // });
+
+    var input_cat = document.getElementById("search_cat");
+    $("#search_cat").change(function(d){
+        if ($.inArray(capitalize_Words($('#search_cat').val()), domain_list) < 0) {
+            input_cat.setCustomValidity("Invalid Skill Group Entered!");
+          } else {
+            input_cat.setCustomValidity("");
+          }
+    });
+    $("#search_cat").autocomplete({
+        source: domain_list })
+    // $("#button_cat").click(function(d){
+    //     window.location.href = WIN_URL + 'skill_analysis/category='+ $('#search_cat').val();
+    //     // $.get(WIN_URL + 'skill_analysis/category=', {searchitem: $('#search_cat').val()});
+    // });
+
+    var input_fctn = document.getElementById("search_role");
+    $("#search_role").change(function(d){
+        if ($.inArray(capitalize_Words($('#search_role').val()), function_list) < 0) {
+            input_fctn.setCustomValidity("Invalid Skill Group Entered!");
+          } else {
+            input_fctn.setCustomValidity("");
+          }
+    });
+    $("#search_role").autocomplete({
+        source: function_list })
+    // $("#button_role").click(function(d){
+    //     window.location.href = WIN_URL + 'skill_analysis/role='+ $('#search_role').val();
+    // });
+});
+
+//capitalize_Words 
+function capitalize_Words(str){
+    return str.replace(/\b\w+/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+</script>
+</html>

@@ -1,0 +1,1229 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+
+<title>SkillSense</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='current/css/normalize.css') }}" />
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='current/css/style.css') }}" />
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='current/css/slidein/style.css') }}" />
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='current/css/style_edit.css') }}" />
+	<!-- <link href="css/form.css" rel="stylesheet" type="text/css"> -->
+    <script src="https://use.fontawesome.com/b4d97f0552.js"></script>
+	<script src="{{ url_for('static',filename='current/js/modernizr.js') }}"></script> <!-- Modernizr -->
+</head>
+<style type="text/css">
+    .ui-autocomplete { font-size: 10px; max-height: 500px; overflow-y: auto; overflow-x: hidden;}  
+
+    .header .cola { width: 15%; }
+    .header .colb { width: 40%; }
+    .navi ul li { width: 25%; }
+    .form-row input {
+        color: #5f5f5f;
+        box-sizing: border-box;
+        /* width: 230px; */
+        width: -webkit-fill-available;
+        box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.08);
+        padding: 12px 18px;
+        border: 1px solid #dbdbdb;
+    }
+    .div_skill { width: 200px; margin: auto; }
+    .form-row button {
+        display: block;
+        border-radius: 2px;
+        background-color: #4c565e;
+        color: #ffffff;
+        font-weight: bold;
+        box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.08);
+        padding: 15px 35px;
+        border: 0;
+        margin: 25px auto 0;
+        cursor: pointer;
+    }
+    .ctnCenter{
+        width: 100%;
+        display: inline-block;
+        vertical-align: top;
+    }
+</style>
+<body>
+<div class="maincontainer">
+	<div class="topcontainer header">
+		<div class="col cola">
+			<div class="padding logo skillsense">
+				<a href="{{ url_for('home') }}"><img src="{{ url_for('static',filename='current/images/logo2.png') }}" alt="SkillSense Logo Here"/></a>
+			</div>
+		</div><!-- Logo --><div class="col colb">
+		<div class="navi">
+			<ul>
+				<a href="javascript:navigateGraph('category')"><li class="con_t tcategory"><div class="padding">Job Category Analysis</div>
+				</li></a><a href="javascript:navigateGraph('role')"><li class="con_t trole"><div class="padding">Job Role Analysis</div>
+				</li></a><a href="javascript:navigateGraph('skill_group')"><li class="con_t tskill_group"><div class="padding">Skill Group Analysis</div>
+				</li></a><a href="javascript:navigateGraph('skill')"><li class="con_t tskill"><div class="padding">Skills Analysis</div>
+                </li></a>
+			</ul>
+		</div>
+		</div><!-- Col b / Search --><div class="col colc" id="th_slider" style="display: none;"><div class="padding">
+		  <div class="scoretxt">Weights Threshold:</div>
+			<!-- <img src="images/bar.jpg" style="width: 100%;" alt=""/> -->
+			<div class="range_new">                
+                <input type="range" name="points" id="thresholdSlider" step="0.006" value="0.5" min="1" max="0.06" 
+                    onchange="filterTH(this.value)">
+                <output id="sliderval">#</output>
+            </div>
+		</div></div><div class="col cold logo2"><img src="{{ url_for('static',filename='current/images/logo.png') }}" alt=""/></div>
+	</div><!-- Top Container -->
+	<div class="bottomcontainer" id="content">
+		<div class="ctnleft">
+    		<div class="padding">
+    		<!-- <a href="#0" class="cd-btn">Open Window</a>
+    		<a href="#0" class="cd-btn2">Open Window2</a> -->
+    		
+				<h1><em><text id="graph_header"></text></em></h1> 
+                <div class="searchby_content div_skill display_block" style="opacity: 1;">
+                    <div class="form-row">
+                        <input id="search_skill" type="text" name="name" placeholder="Enter Skill" class="ui-autocomplete-input" autocomplete="off">
+                    </div>
+                    <div class="form-row form-last-row">
+                        <button id="button_s" type="submit" class="width_fill" href="">Search</button>
+                    </div>
+                </div>
+	    		<!-- <img src="images/jobrole.png" width="784" height="601" alt=""/> -->
+	    		<div id="rel_graph"></div>
+	    	</div>
+		</div>
+        <div class="ctnCenter">
+            <div class="padding">
+                <div id="rel_graphtemp"></div>
+            </div>
+        </div>
+        <div class="ctnright">
+  			
+   			<div class="ctntips">
+   				<h1>Helpful Tips</h1>
+   				<div class="tipsinner">
+					<div class="padding">
+						<strong>MouseOver</strong> <br>
+						- Job Role to view Selected Skill Group<br>
+						- Skill Group to view associated Job Role<br><br><br>
+						<strong>MouseClick</strong><br>
+						- Job Role to show list of Job Titles<br>
+						- Skill Group to view list of Skills
+					</div>
+    			</div>
+	    	</div>
+		</div>
+
+		<!-- insert button here -->
+
+		<button onclick="topFunction()" id="backtopBtn" title="Go to top">Top</button>
+	</div><!-- Bottom Container -->
+	
+</div>
+	<div class="cd-panel from-right">
+		<header class="cd-panel-header header1">
+			<h1>Skill Group</h1>
+			<a href="#0" class="cd-panel-close closebtn" id="close">Close</a>
+		</header>
+
+		<div class="cd-panel-container cdcontainer1">
+			<div class="cd-panel-content">
+				<!-- <h2>Human Resource, Human Resource Management, Payroll, Resource Management, Human Resources</h2> -->
+				<h2><span id="skill_group_title"></span></h2>
+		    	<!-- <img src="images/graph2.jpg" width="412" height="363" alt=""/> --> </div> <!-- cd-panel-content -->
+		    	<div id="skills_chart">
+                    <br><br><!-- <button style="float: left;" title="Back to overall view" onclick="escapeDetailedView()">Hide</button> --><br>
+                    <!-- <label><br><span id="skill_group_title"></span></label> -->
+                    <svg class="skills_bar" width="430" height="480"></svg>
+                    <br>
+                </div>
+		</div> <!-- cd-panel-container -->
+	</div> <!-- cd-panel -->
+	
+	<div class="cd-panel2 from-left">
+		<header class="cd-panel-header header2">
+			<h1>Skill Group</h1>
+			<a href="#0" class="cd-panel-close closebtn" id="close1">Close</a>
+		</header>
+
+		<div class="cd-panel-container cdcontainer2">
+			<div class="cd-panel-content"><a href="#0" class="cd-btn3">Open Window3</a>
+				<h2>Human Resource, Human Resource Management, Payroll, Resource Management, Human Resources</h2>
+		    <!-- <img src="images/graph2.jpg" width="412" height="363" alt=""/> --> </div> <!-- cd-panel-content -->
+		</div> <!-- cd-panel-container -->
+	</div> <!-- cd-panel -->
+	
+	<div class="cd-panel2 from-left">
+		<header class="cd-panel-header header3">
+			<h1>Skill Group</h1>
+			<a href="#0" class="cd-panel-close closebtn" id="close2">Close</a>
+		</header>
+
+		<div class="cd-panel-container cdcontainer3">
+			<div class="cd-panel-content">
+				<h2>Human Resource, Human Resource Management, Payroll, Resource Management, Human Resources 123</h2>
+		    	<!-- <img src="images/graph2.jpg" width="412" height="363" alt=""/> --> 
+		   	</div> <!-- cd-panel-content -->
+		</div> <!-- cd-panel-container -->
+	</div> <!-- cd-panel -->
+	
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<script src="{{ url_for('static',filename='current/js/main.js') }}"></script> <!-- Resource jQuery -->
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/d3.v4.min.js"></script>
+<script src="http://vizjs.org/viz.v1.1.0.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='d3.layout.cloud.js') }}"></script>
+<script type="text/javascript">
+var DATA_URL = '/data/';
+var WIN_URL = '';
+
+var navbar_Height = $("#navbar").height();
+// console.log("navbar_Height", navbar_Height);
+var window_height = $(window).height();   // returns height of browser viewport
+var document_height = $(document).height();
+console.log("window_height", window_height);
+document.getElementById("content").style.height = 2115 + 'px';
+
+//******************************************//
+//                                          //
+//              BIPARTITE CHART             //
+//                                          //
+//******************************************//
+function drawBpGraph(data_arr, graph_header, is_Slider, search_item){
+    $.getScript("http://d3js.org/d3.v4.min.js", function() {
+    var skills_h = 480;
+    // console.log("data_arr:", data_arr);
+    // update display titles
+    $("#rel-svg").remove();
+    $(".ctnright").show();
+
+    var bpheight = 2080, bpwidth = 1100;
+    document.getElementById("content").style.height = (bpheight + 15) + 'px';
+    d3.select("#rel_graph")
+        .attr("class", "bp_size");
+    var color = d3.scale.category20c();
+    var svg = d3.select("#rel_graph").append("svg")
+        .attr("id", "rel-svg")
+        .attr("width", bpwidth)
+        .attr("height", bpheight)
+        .style("display", "block")
+        ;
+
+    // svg.append("text").attr("x",384).attr("y",14)
+    //     .attr("class","header")
+    //     .style("font-weight","bold")
+    //     .text("Association between "+graph_header+" and Skill Groups")
+    //     .transition().duration(850).style("opacity", 1);
+    $("#graph_header").text("Association between "+graph_header+" and Skill Groups");
+
+    var g = svg.append("g")
+        .attr("id", "rel-g");
+
+    if (!is_Slider){
+        g.transition().duration(750).attr("transform","translate(235,20)");
+    }
+    else{
+        g.style("opacity", 0);
+        g.attr("transform","translate(235,20)");
+        g.transition().duration(750).style("opacity", 1);
+    }
+
+    var color_dict = colorizeData();
+
+    var bp=viz.bP()
+            .data(data_arr)
+            .min(10)
+            .pad(0)
+            .height(1990)
+            .width(300)
+            .barSize(35)
+            .edgeMode("straight")
+            .fill(d=>color_dict[d.primary])
+            .duration(250);
+                
+    g.call(bp);
+
+    g.append("text").attr("x",-100).attr("y",-8)
+        .style("text-anchor","middle")
+        .style("fill","grey")
+        .text(graph_header);
+    g.append("text").attr("x", 550).attr("y",-8)
+        .style("text-anchor","middle")
+        .style("fill","grey")
+        .text("Skill Group (Representative Skills)");
+
+    g.append("text").attr("x", 150).attr("y",-2)
+        .style("text-anchor","middle")
+        .style("fill","grey")
+        .style("font-size", "10px")
+        .text(data_arr.length);
+
+    g.append("line").attr("x1",-229).attr("x2",0);
+    g.append("line").attr("x1",300).attr("x2",825);
+
+    g.selectAll(".mainBars")
+        .attr("id", function(d){ return d.key; })
+        .on("mouseover",mouseover)
+        .on("mouseout",mouseout)
+        .on("click", click);
+
+    g.selectAll(".mainBars").select("rect")
+        .attr("id", function(d){ return d.key; })
+        .on("mouseover",mouseover)
+        .on("mouseout",mouseout);
+
+    g.selectAll(".mainBars").append("text").attr("class","label")
+        .attr("x",d=>(d.part=="primary"? -82: 82))
+        .attr("y",d=>+6)
+        .text(d=>d.key)
+        .attr("text-anchor",d=>(d.part=="primary"? "end": "start"));
+        
+    g.selectAll(".mainBars").append("text").attr("class","perc")
+        .attr("x",d=>(d.part=="primary"? -25: 25))
+        .attr("y",d=>+6)
+        .text(function(d){ return "(" + d3.format("0.1%")(d.percent) + ")"})
+        .style("fill","grey")
+        .attr("text-anchor",d=>(d.part=="primary"? "end": "start"));
+
+    function colorizeData(){
+        var pri_list_uniq = [], seen = new Set();
+        outer:  
+        for (var index = 0; index < data_arr.length; index++) {
+            var value = data_arr[index][0];
+            if (seen.has(value)) continue outer;
+            seen.add(value);
+            pri_list_uniq.push(value);
+        }
+
+        var color_dict = {};
+
+        for (i = 0; i < pri_list_uniq.length; i++) {
+            color_dict[pri_list_uniq[i]] = color(i);
+        }
+        return color_dict;
+    }
+    var stored_mouseover_bp;
+    function mouseover(d){
+        if (clicked !== 1){
+            bp.mouseover(d);
+            g.selectAll(".mainBars").select(".perc")
+                .text(function(d){ return "(" + d3.format("0.1%")(d.percent) + ")"});
+
+            var selectedBar = d3.select(this);
+            // console.log("hoveredBar", selectedBar);
+            selectedBar.select(".label").style('font-weight','bold');
+            selectedBar.select(".perc").style('font-weight','bold'); 
+        }   
+    }
+    function mouseout(d){
+        if (clicked !== 1){
+            bp.mouseout(d);
+            g.selectAll(".mainBars").select(".perc")
+                .text(function(d){ return "(" + d3.format("0.1%")(d.percent) + ")"});
+
+            var selectedBar = d3.select(this);
+            selectedBar.select(".label").style('font-weight','normal');
+            selectedBar.select(".perc").style('font-weight','normal');
+        }
+    }
+    var clicked = 0, stored_var = '';
+    function click(d){
+        // condition: none clicked
+        // console.log(d);
+        if (clicked === 0){  
+            stored_mouseover_bp = d;  // store for changing clicked bar usage
+            clicked = 1; 
+            // stored_var = $(this).attr('id'); 
+            stored_var = d.key;
+            console.log("IF1");
+
+            if (d.part == "secondary") {
+            	//draw skills bar
+	            $.get(DATA_URL + 'skill_analysis/skills_barchart/' + d.key, function(bar_chart_data){
+	                $('#skill_group_title').text(d.key);
+	                drawSKillsBar(d, bar_chart_data, skills_h);
+	            });
+            }
+            
+        }
+        // condition: clicked same bar
+        // else if (clicked === 1 && stored_var === $(this).attr('id')){  
+        else if (clicked === 1 && stored_var === d.key){  
+            clicked = 0;
+            stored_var = '';
+            g.selectAll(".mainBars").select(".perc")
+                .text(function(d){ return d3.format("0.1%")(d.percent)});
+            console.log("IF2");
+        }
+        // condition: clicked different bar when clicked bar exist
+        else if (clicked === 1 && stored_var !== d.key){  
+            stored_var = d.key;
+            bp.mouseout(stored_mouseover_bp);
+            d3.selectAll(".label").style('font-weight','normal');
+            d3.selectAll(".perc").style('font-weight','normal');
+            d3.selectAll("rect").style('stroke-opacity',0);
+            bp.mouseover(d);
+            g.selectAll(".mainBars").select(".perc")
+                .text(function(d){ return d3.format("0.1%")(d.percent)});
+            // var selectedBar = d3.select(this);
+            var selectedBar = d3.selectAll('.mainBars').filter(function(s){ return s.key == d.key});
+            selectedBar.select(".label").style('font-weight','bold');
+            selectedBar.select(".perc").style('font-weight','bold');
+            console.log("IF3");
+            if (d.part == "secondary") {
+            	//draw skills bar
+	            $.get(DATA_URL + 'skill_analysis/skills_barchart/' + d.key, function(bar_chart_data){
+	                $('#skill_group_title').text(d.key);
+	                drawSKillsBar(d, bar_chart_data, skills_h);
+	            });
+            }
+        }
+        console.log(stored_var);
+    }
+
+    if (search_item !== 'null'){
+        var search_datum;
+        var searchedBar = d3.selectAll('.mainBars').filter(function(s){ 
+            if (s.key == search_item){ search_datum = s; } 
+            return s.key == search_item
+            });
+        g.selectAll(".mainBars").select(".perc")
+            .text(function(d){ return d3.format("0.1%")(d.percent)});
+        stored_mouseover_bp = search_datum;  // store for changing clicked bar usage
+        clicked = 1; 
+        stored_var = search_datum.key;
+        bp.mouseover(search_datum);
+        searchedBar.select(".label").style('font-weight','bold');
+        searchedBar.select(".perc").style('font-weight','bold');
+    }
+
+    d3.select(self.frameElement).style("height", "800px");
+    setTimeout(function(){
+        $(".loader").fadeOut("fast");
+    }, 150);
+    });
+}
+
+//******************************************//
+//                                          //
+//               CHORD DIAGRAM              //
+//                                          //
+//******************************************//
+function drawChordGraph(data_arr, graph_header, search_item){
+    $.getScript("http://d3js.org/d3.v4.min.js", function() {
+    // var chwidth = 1850, chheight = 660, x_title = 924, x_translate = 920, y_translate = 355, inner_r = 250, outer_r = 270, 
+    var chwidth = 1870, chheight = 820, x_title = 924, x_translate = 930, y_translate = 405, inner_r = 310, outer_r = 330, 
+        // y_cutoff = 259, upper_diff = 1.9, lower_diff = 3.3, shift_x = 760, skills_h = 480;  // for big screen
+        y_cutoff = 310, upper_diff = 1.7, lower_diff = 3.7, shift_x = 930, skills_h = 480;  // for big screen
+    if (window_height < 800){
+        // chwidth = 1500, chheight = 595, x_title = 764, x_translate = 765, y_translate = 320, inner_r = 217, outer_r = 237, 
+        chwidth = 1500, chheight = 595, x_title = 764, x_translate = 565, y_translate = 320, inner_r = 217, outer_r = 237, 
+        y_cutoff = 226, upper_diff = 2.4, lower_diff = 5.0, shift_x = 565, skills_h = 400;  // for small screen
+    }
+    document.getElementById("content").style.height = (chheight+10) + 'px';
+    // console.log("data_arr:", data_arr);
+
+    $("#ch-svg").remove();
+    $(".ctnright").hide();
+
+    var color = d3.scale.category20c();
+
+    d3.select("#rel_graph")
+        .attr("class", "chord_size")
+        .style("width", chwidth);
+
+    var svg = d3.select("#rel_graph").append("svg")
+        .attr("id", "ch-svg")
+        .attr("height",chheight)
+        .attr("width",chwidth)
+        .style("display", "block")
+        .style("margin", "auto");
+
+    var g = svg.append("g")
+        .attr("id", "ch-g");
+
+    $("#graph_header").text("Association between "+graph_header+" and Skill Groups");
+
+    // g.transition().duration(750).attr("transform", "translate(700,320)");
+    g.attr("transform", "translate("+x_translate+","+y_translate+")");
+
+    var color_dict = colorizeData();
+
+    var ch = viz.ch().data(data_arr)
+      .padding(.03)
+      // .sort(sort)
+      .innerRadius(inner_r).outerRadius(outer_r)
+      .duration(150)
+      .chordOpacity(0.3)
+      .labelPadding(.03)
+      .valueFormat(function(d) { return d.toFixed(2) + "%" })
+      .fill(function(d){ return color_dict[d];});
+      // .startAngle(-Math.PI/2);
+
+    g.call(ch);
+
+    var groups_init = g.selectAll(".groups")
+        .on("mouseover",mouseover)
+        .on("mouseout",mouseout)
+        .on("click", click);
+
+    groups_init.classed("proper", function(d){
+        var this_group;
+        d3.select(this).select("text").filter(function(g){ if (g.type == 'g'){this_group = g} else { this_group = "null"} });
+        if (this_group !== "null") { return true; };
+        });
+
+    var groups = g.selectAll(".proper");
+
+    var alltext = g.selectAll(".groups").select("text.label")
+        .attr("type", function(d){ return d.type})
+        .filter(function(d){ return d.type=="g" });
+
+    // adjust chord labels position
+    var prev_y;
+    alltext.attr("dy", function(d){
+        var y_pos = $(this).attr("y");
+        var diff_y = Math.abs(y_pos) - y_cutoff;
+
+        if(y_pos < -y_cutoff){ // upper hemisphere, dy more -ve .3em
+            console.log("ypos, diff_y", y_pos, diff_y, d.source);
+            return "-" + (diff_y*upper_diff) + "px";
+        }
+        else if(y_pos > (y_cutoff+12.5)){ // lower hemisphere, dy more +ve .3em
+            console.log("ypos, diff_y", y_pos, diff_y-6.5, d.source);
+            cur_diff = Math.abs(y_pos) - (y_cutoff+19.5);
+            prev_y = y_pos;
+            return "" + (cur_diff*lower_diff) + "px";
+        }
+        else{  
+            return "0px";
+        }
+    });
+
+    $(".loader").fadeOut("fast");   
+
+    function colorizeData(){
+        var pri_list_uniq = [], seen = new Set();
+        outer:  
+        for (var index = 0; index < data_arr.length; index++) {
+            var value = data_arr[index][0];
+            if (seen.has(value)) continue outer;
+            seen.add(value);
+            pri_list_uniq.push(value);
+        }
+
+        var color_dict = {};
+
+        for (i = 0; i < pri_list_uniq.length; i++) {
+            color_dict[pri_list_uniq[i]] = color(i);
+        }
+        return color_dict;
+    }
+
+    var stored_mouseover_ch;
+    var weights_th = 0.02;
+    function mouseover(d){
+        if (clicked !== 1){
+            console.log("Enter chord mouseover");
+            ch.mouseover(d);        
+
+            alltext.classed("text_hidden", true);
+            // assign class show_text to text above weights_th
+            alltext.filter(function(t){ return !(t.percent <= weights_th && t.source != d.source) })
+                .classed("show_text", true).classed("text_hidden", false);
+            
+            var selectedBar = d3.select(this);
+            // console.log("hoveredBar", selectedBar);
+            selectedBar.select(".label").style('font-weight','bold')
+                .style('font-size','11px');
+
+            // set displayed percentage to be based upon target skill_group(d)
+            setTimeout(function(){
+                console.log("CHANGE");
+                d3.selectAll(".show_text").filter(function(t){ return (t.source != d.source) })
+                    .text(function(t){
+                        return t.source+" ("+((t.value/d.value)*100).toFixed(2)+"%)"
+                    });
+            }, 20);
+        }
+        else{  // detailView: when target skill_group is clicked
+            var target_sg;
+            d3.select(".target").filter(function(t){  // .target == clicked skill-group only
+                target_sg = t;
+            });
+
+            var selected_text = d3.selectAll(".show_text")
+                .text(function(t){
+                    if (target_sg.source != t.source){
+                        return t.source +" ("+((t.value/target_sg.value)*100).toFixed(2)+"%)"
+                    }
+                    else{
+                        return t.source + " (" + t.value.toFixed(2) + "%)" ;
+                    } 
+                });
+
+            // show skill-group hidden label
+            var hovered = d3.select(this).select(".label");
+            if (hovered.classed("text_hidden") == true){
+                hovered
+                    .text(function(t){
+                        return t.source +" ("+((t.value/target_sg.value)*100).toFixed(2)+"%)"
+                    })
+                    .classed("text_hidden", false).classed("was_hidden", true);
+            }
+        }
+    }
+    function mouseout(d){
+        if (clicked !== 1){
+            console.log("Enter chord mouseout");
+            ch.mouseout(d);
+            alltext.classed("text_hidden", false).classed("show_text",false);
+            var selectedBar = d3.select(this);
+            selectedBar.select(".label").style('font-weight','normal')
+                .style('font-size','10px');
+        }
+        else{ // detailView: when target skill_group is clicked
+            var target_sg;
+            d3.select(".target").filter(function(t){
+                target_sg = t;
+            });
+
+            // re-hide .was_hidden
+            d3.select(".was_hidden").classed("text_hidden", true).classed("was_hidden", false);
+
+            // truncateTextLabel(target_sg);
+        }
+    }
+
+    escapeDetailedView = function escapeDetailedView(){
+        console.log("Escaped detailView");
+        clicked = 0;
+        stored_name = '';
+
+        $("#skill2skill").hide();
+
+        ch.mouseout(stored_mouseover_ch);
+        alltext.classed("text_hidden", false).classed("show_text",false)
+            .style('font-weight','normal')
+            .style('font-size','10px');
+
+        $('#skill_group_title').text("");
+        d3.select("svg.skills_bar").transition().duration(300).attr("opacity", 0);
+        
+        d3.select("#skills_chart").attr("visibility", "hidden");
+        $("#skills_chart").fadeOut(200);
+        setTimeout(function(){
+            $("#rel_graph").removeClass("ch_pos");
+        }, 300);
+        d3.select("#ch-g")
+            .transition().duration(550).attr("transform", "translate("+x_translate+","+y_translate+")");
+    }
+
+    var clicked = 0, stored_name = '';
+    function click(d){
+        if (clicked === 0){
+            stored_mouseover_ch = d;
+            clicked = 1; 
+            stored_name = d.source; 
+            console.log("IF1");
+
+            //assign class target to clicked skill_group text elm
+            d3.select(this).select("text").classed("target", true);
+
+            //draw skills bar
+            $.get(DATA_URL + 'skill_analysis/skills_barchart/' + d.source, function(bar_chart_data){
+                $('#skill_group_title').text(d.source);
+                drawSKillsBar(d, bar_chart_data, skills_h);
+            });
+            //tranform chord position
+            d3.select("#ch-g")
+                .transition().duration(850).attr("transform", "translate("+shift_x+","+y_translate+")");
+        }
+        else if (clicked === 1 && stored_name === d.source){
+            clicked = 0;
+            stored_name = '';
+            console.log("IF2");
+
+            $("#skill2skill").hide();
+
+            $('#skill_group_title').text("");
+            d3.select("svg.skills_bar").transition().duration(300).attr("opacity", 0);
+            
+            d3.select("#skills_chart").attr("visibility", "hidden");
+            $("#skills_chart").fadeOut(200);
+            setTimeout(function(){
+                $("#rel_graph").removeClass("ch_pos");
+            }, 300);
+            d3.select("#ch-g")
+                .transition().duration(550).attr("transform", "translate("+x_translate+","+y_translate+")");
+        }
+        else if (clicked === 1 && stored_name !== d.source){
+            stored_name = d.source;
+            ch.mouseout(stored_mouseover_ch);
+
+            alltext
+                .classed("text_hidden", false).classed("show_text", false).classed("target", false)
+                .style('font-weight','normal')
+                .style('font-size','10px');;
+
+            ch.mouseover(d);
+           
+            alltext.classed("text_hidden", true);
+            alltext.filter(function(t){ return !(t.percent <= weights_th && t.source != d.source) })
+                .classed("show_text", true).classed("text_hidden", false);
+
+            var selectedBar = d3.select(this);
+            selectedBar.select(".label").classed("target", true)
+                .style('font-weight','bold')
+                .style('font-size','11px');
+
+            console.log("IF3");
+            $("#skill2skill").hide();
+            
+            $.get(DATA_URL + 'skill_analysis/skills_barchart/' + d.source, function(bar_chart_data){
+                $('#skill_group_title').text(d.source);
+                drawSKillsBar(d, bar_chart_data, skills_h);
+            });
+        }
+        console.log("stored_name:", stored_name);
+    }
+
+    if (search_item !== 'null'){
+        var search_datum;
+        var searchedGroup = groups.filter(function(s){ 
+            if (s.source == search_item){ search_datum = s; } 
+            return s.source == search_item
+            });
+        // bp.mouseover(search_datum);
+        // searchedBar.select(".label").style('font-weight','bold');
+        // searchedBar.select(".perc").style('font-weight','bold');
+
+        stored_mouseover_ch = search_datum;
+        clicked = 1; 
+        stored_name = search_datum.source; 
+        ch.mouseover(search_datum);
+
+        alltext.classed("text_hidden", true);
+        alltext.filter(function(t){ return !(t.percent <= weights_th && t.source != search_datum.source) })
+            .classed("show_text", true).classed("text_hidden", false);
+
+        //assign class target to clicked skill_group text elm
+        searchedGroup.select("text").classed("target", true).style('font-weight','bold')
+                .style('font-size','11px');
+
+        //draw skills bar
+        $.get(DATA_URL + 'skill_analysis/skills_barchart/' + search_datum.source, function(bar_chart_data){
+            $('#skill_group_title').text(search_datum.source);
+            drawSKillsBar(search_datum, bar_chart_data, skills_h);
+        });
+        //tranform chord position
+        d3.select("#ch-g")
+            .transition().duration(850).attr("transform", "translate("+shift_x+","+y_translate+")");
+    }
+});
+} // end drawChordGraph()
+
+//******************************************//
+//                                          //
+//              SKILLS BAR CHART            //
+//                                          //
+//******************************************//
+function drawSKillsBar(target, data, skills_h){
+    $.getScript("http://d3js.org/d3.v4.min.js", function() {
+    //clear previous
+    $("#skills_bar").html("");
+    $("#skills-g").remove();
+
+    // console.log("skills data:", data);
+    //sort bars based on value
+    var svg = d3.select("svg.skills_bar")
+        .attr("opacity", 0)
+        .style("margin-left", "auto")
+        .style("margin-right", "auto")
+        .style("position", "relative");
+    var margin = {top: 45, right: 20, bottom: 30, left: 180},
+        width = +svg.attr("width") - margin.left - margin.right,
+        height = +skills_h - margin.top - margin.bottom;
+  
+    var tooltip = d3.select("#skills_chart").append("div").attr("class", "toolTip");
+      
+    var x = d3.scaleLinear().range([0, width]);
+    var y = d3.scaleBand().range([height, 0]);
+
+    var g = svg.append("g")
+        .attr("id", "skills-g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    data.sort(function(a, b) { return a.value - b.value; });
+
+    x.domain([0, d3.max(data, function(d) { return d.value; })]);
+    y.domain(data.map(function(d) { return d.name; })).padding(0.1);
+
+    g.append("g")
+        .attr("class", "y axis")
+        .call(d3.axisLeft(y));
+    g.selectAll("g.tick").select("text")
+        .attr("font-size", "11px")
+        .attr("class", "skills_chart_text");
+
+    g.selectAll(".bar")
+        .data(data)
+      .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", 0)
+        .attr("height", y.bandwidth())
+        .attr("y", function(d) { return y(d.name); })
+        .attr("width", function(d) { return x(d.value); })
+        .on("mousemove", function(d){
+            tooltip
+              .style("left", d3.event.pageX -50 + "px")
+              .style("top", d3.event.pageY -120 + "px")
+              .style("display", "inline-block")
+              .html((d.name) + "<br>" + (d.value).toFixed(3));
+        })
+            .on("mouseout", function(d){ tooltip.style("display", "none");});
+
+    d3.select("#skills_chart").attr("visibility", "visible");
+    d3.select("#skills_chart").style("display", "block");
+    svg.attr("display", "block");
+    svg.transition().duration(750).attr("opacity", 1);
+
+    // detailView: truncate text, translate posiiton to left
+    // truncateTextLabel(target);
+
+    d3.selectAll("text.skills_chart_text")
+        .on("click", function(skill_name){
+            d3.selectAll(".skills_chart_text").classed("selected_skill", false);
+            d3.select(this).classed("selected_skill", true);
+            $.get(DATA_URL + 'skill_analysis/skillsnetw/' + skill_name, function(skills_data) {
+                var skills_data = JSON.parse(skills_data);
+                if (skills_data.skill_name != "not_found"){
+                    drawSKill2Skill(skills_data);
+                }
+                else{
+                    alert("\"" + skill_name + "\" not found in JSON file");
+                }
+            });
+        });
+
+    $('.cd-panel').addClass('is-visible');
+    });
+}
+
+function truncateTextLabel(target){
+    d3.selectAll(".groups").select("text.label").filter(function(d){ return d.type=="g" }) // can modify to select .show_text
+        .text(function(t){
+            var first_sgmt = t.source.substring(0,20);
+            if(target.source != t.source){
+                return first_sgmt +",.. ("+((t.value/target.value)*100).toFixed(2)+"%)";
+            }
+            else{  // for target skill_group
+                return first_sgmt + ",.. (" + t.value.toFixed(2) + "%)" ;
+            }
+        });
+
+    $("#rel_graph").addClass("ch_pos");
+}
+
+//******************************************//
+//                                          //
+//           SKILL_2_SKILL CHART            //
+//                                          //
+//******************************************//
+function drawSKill2Skill(data){
+    $.getScript("http://d3js.org/d3.v3.min.js", function() {
+    $("#skill2skill").show();
+
+    var s_width = 800,
+      s_height = 600,
+      s_radius = 7,
+      radius_graph = Math.min(s_width, s_height) / 2 - 10;
+
+    var force = d3.layout.force()
+      .charge(-39)
+      // .linkDistance(30)
+      .size([s_width, s_height]);
+
+    $("#skill_nw").remove();
+
+    var distanceScale = d3.scale.linear().range([15,250]);
+    var min_similarity = d3.min(data.links, function(d){ return d.value; });
+    var max_similarity = d3.max(data.links, function(d){ return d.value; });
+    distanceScale.domain([ (1 - max_similarity), (1 - min_similarity) ]);
+
+    var lineThicknessScale = d3.scale.linear().range([1,14]);
+    lineThicknessScale.domain([ min_similarity, max_similarity ]);
+
+    // Fix root node at svg center
+    data.nodes[0].fixed = true;
+    data.nodes[0].x = s_width / 2;
+    data.nodes[0].y = s_height / 2;
+
+    //Creates the graph data structure out of the json data
+    force.nodes(data.nodes)
+        .links(data.links)
+        .linkDistance(function(d) { 
+            return distanceScale(1 - d.value); });
+
+    force.start();
+
+    var s_svg = d3.select("#skill2skill").append("svg")  //Initially select('body')
+        .attr("id", "skill_nw")
+        .attr("width", s_width)
+        .attr("height", s_height)
+        .style("display", "block")
+        .style("margin-left", "auto")
+        .style("margin-right", "auto");
+
+    s_svg.append("text").attr("x",s_width/2).attr("y",54)
+        .attr("class","header_skillc")
+        .style("font-weight","bold")
+        // .text("\'" + data.skill_name + "\' skill cluster");
+        .text("Skills relationship with respect to " + data.skill_name);
+
+    var link = s_svg.selectAll(".link")
+        .data(data.links)
+        .enter().append("line")
+        .attr("class", "link")
+        .style("stroke-width", function(d) {
+            // return Math.sqrt(1 - d.value);
+            return lineThicknessScale(d.value);
+        });
+
+    var node = s_svg.selectAll(".node")
+        .data(data.nodes)
+        .enter().append("circle")
+        .attr("class", "node")
+        .attr("r", function(d){
+            if (d.id == "skill_0"){ return 5 }
+            return s_radius})
+        .style("fill", function(d, i) {
+                if (d.id == "skill_0"){
+                    return "black" }  // target
+                else { return "#5f89ad"}
+        })
+        .call(force.drag);
+
+    var text = s_svg.selectAll("text.node_skill")
+        .data(data.nodes)
+        .enter().append("text")
+        .attr("class", "node_skill")
+        .attr("dx", 10)
+        .attr("dy", ".35em")
+        .attr('id', function(d) { return d.id })
+        .text(function(d){ return d.name });
+
+    force.on("tick", function() {
+        link.attr("x1", function(d) {
+                return d.source.x;
+                })
+                .attr("y1", function(d) {
+                    return d.source.y;
+                })
+                .attr("x2", function(d) {
+                    return d.target.x;
+                })
+                .attr("y2", function(d) {
+                    return d.target.y;
+                });
+        text.attr("x", function(d) { return d.x; })
+            .attr("y", function(d) { return d.y; });
+        
+        node.attr("cx", function(d) {
+                // Bounded within rectangle box
+                return d.x = Math.max(s_radius, Math.min(s_width - s_radius, d.x));
+            })
+            .attr("cy", function(d) {
+                return d.y = Math.max(s_radius, Math.min(s_height - s_radius, d.y));
+            });
+        
+    });
+});
+}
+
+//******************************************//
+//                                          //
+//            DOUBLE SANKEY CHART           //
+//                                          //
+//******************************************//
+function drawDoubleSankey(all_skill_gp, dom_data, func_data, graph_header){
+    // console.log("dom_data", dom_data);
+    // console.log("func_data", func_data);
+    // console.log("all_skill_gp", all_skill_gp);
+    $("#rel-svg").remove();
+    $(".ctnright").hide();
+    var color = d3.scale.category20c();
+    var color_dict = colorizeData();
+
+    function colorizeData(){
+        var pri_list_uniq = [], seen = new Set();
+        outer:  
+        for (var index = 0; index < all_skill_gp.length; index++) {
+            var value = all_skill_gp[index];
+            if (seen.has(value)) continue outer;
+            seen.add(value);
+            pri_list_uniq.push(value);
+        }
+
+        var color_dict = {};
+
+        for (i = 0; i < pri_list_uniq.length; i++) {
+            color_dict[pri_list_uniq[i]] = color(i);
+        }
+        return color_dict;
+    }
+    var svg = d3.select("#rel_graphtemp").append("svg").attr("id", "rel-svg").attr("width", 1860).attr("height", 2180);
+
+    svg.append("text").attr("x",590).attr("y",30)
+        .attr("class","header").text("Domain");
+        
+    svg.append("text").attr("x",1570).attr("y",30)
+        .attr("class","header").text("Function");
+
+    var g =[svg.append("g").attr("class", "gctn").attr("transform","translate(470,80)")
+            ,svg.append("g").attr("class", "gctn").attr("transform","translate(1450,80)")];
+
+    var bp=[ viz.bP()
+            .data(dom_data)
+            // .min(12)
+            // .pad(1)
+            // .height(600)
+            // .width(200)
+            .barSize(35)
+            .min(10)
+            .pad(0)
+            .height(1990)
+            .width(300)
+            .edgeMode("straight")
+            // .fill(d=>color[d.primary])      
+            .fill(function(d){
+                return color_dict[d.primary];
+            })      
+        ,viz.bP()
+            .data(func_data)
+            // .value(d=>d[3])
+            // .min(12)
+            .min(10)
+            // .pad(1)
+            .pad(0)
+            .height(1990)
+            // .width(200)
+            .width(300)
+            .barSize(35)
+            .edgeMode("straight")
+            // .fill(d=>color[d.primary])
+            .fill(function(d){
+                return color_dict[d.primary];
+            }) 
+    ];
+            
+    [0,1].forEach(function(i){
+        g[i].call(bp[i])
+        
+        g[i].append("text").attr("x",-50).attr("y",-8).style("text-anchor","middle").text("Skill Group");
+        g[i].append("text").attr("x", 250).attr("y",-8).style("text-anchor","middle").text("TEMP");
+        
+        g[i].append("line").attr("x1",-100).attr("x2",0);
+        g[i].append("line").attr("x1",200).attr("x2",300);
+        
+        g[i].append("line").attr("y1",610).attr("y2",610).attr("x1",-100).attr("x2",0);
+        g[i].append("line").attr("y1",610).attr("y2",610).attr("x1",200).attr("x2",300);
+        
+        g[i].selectAll(".mainBars")
+            .on("mouseover",mouseover)
+            .on("mouseout",mouseout);
+
+        g[i].selectAll(".mainBars").append("text").attr("class","label")
+            .attr("x",d=>(d.part=="primary"? -62: 62))
+            .attr("y",d=>+6)
+            .text(d=>d.key)
+            .attr("text-anchor",d=>(d.part=="primary"? "end": "start"));
+        
+        g[i].selectAll(".mainBars").append("text").attr("class","perc")
+            .attr("x",d=>(d.part=="primary"? -25: 25))
+            .attr("y",d=>+6)
+            .text(function(d){ return d3.format("0.0%")(d.percent)})
+            .attr("text-anchor",d=>(d.part=="primary"? "end": "start"));
+    });
+
+    function mouseover(d){
+        [0,1].forEach(function(i){
+            bp[i].mouseover(d);
+            
+            g[i].selectAll(".mainBars").select(".perc")
+            .text(function(d){ return d3.format("0.0%")(d.percent)});
+        });
+    }
+    function mouseout(d){
+        [0,1].forEach(function(i){
+            bp[i].mouseout(d);
+            
+            g[i].selectAll(".mainBars").select(".perc")
+            .text(function(d){ return d3.format("0.0%")(d.percent)});
+        });
+    }
+}
+
+function initGraph(rel_type, search_item){
+    // update nav active css
+    $('.con_t').removeClass('active');
+    $('.t' + rel_type).addClass('active');
+    $("#rel-svg").remove();
+    $("#ch-svg").remove();
+    $("#skill_nw").remove();
+    $("input[name=points]").removeClass();
+    d3.select("#skills_chart").style("display", "none");
+
+    var data, data_rec;
+
+    if (rel_type === 'category' || rel_type === 'role'){
+        $(".loader").show();
+        $.get(DATA_URL + 'skill_analysis/bP/' + rel_type, function(data_raw) {
+            console.log("raw_data:", data_raw);
+            data = data_raw.data.slice();
+            // compute min/max weigvar data_rec = data.slice();htage value for slider
+            data_rec = data.slice();
+            // compute slider value based on data
+            computeSlider(data, rel_type);
+            $("input[name=points]").addClass(rel_type);
+            // var content = { pri_size: data_raw.primary_size, sec_size: data_raw.secondary_size };
+            // drawBpGraph(scaled_data, converttoDisplay(rel_type));
+            drawBpGraph(data, converttoDisplay(rel_type), false, search_item);
+        });
+    }
+    else if (rel_type === 'skill_group'){
+        $("#th_slider").animate({ opacity: 0 }, "fast" ).css("display", "none");
+        $(".loader").show();
+        console.log("Enter SKill_group-Skillgroup");
+        $.get(DATA_URL + 'skill_analysis/chord/', function(data_raw) {
+            // console.log("chord data_raw:", data_raw);
+            data = data_raw.slice();
+            // compute min/max weigvar data_rec = data.slice();htage value for slider
+            data_rec = data.slice();
+            // compute slider value based on data
+            // computeSlider(data, rel_type);  // remove if not needed
+            
+            drawChordGraph(data, converttoDisplay(rel_type), search_item);
+        });
+    }
+    else if (rel_type === 'skill'){
+        console.log("Enter SKills")
+        
+    }
+    filterTH = function filterTH(value_th){
+            $("#sliderval").text(value_th);
+
+            //reset skill chart
+            $('#skill_group_title').text("");
+            d3.select("svg.skills_bar").transition().duration(300).attr("opacity", 0);
+            
+            d3.select("#skills_chart").attr("visibility", "hidden");
+            $("#skills_chart").fadeOut(300);
+
+            //should accept a slider value
+            // console.log("slider data_rec", data_rec);
+            // console.log("slider data", data);
+            data.splice(0, data.length);
+
+            for (var i = 0; i < data_rec.length; i++) {
+                // if (data_rec[i][2] > 0.045) {
+                if (data_rec[i][2] > value_th) {
+                    data.push(data_rec[i]);
+                }
+            }
+            // re-initiate BpGraph
+            var slider_class = $("input[name=points]").attr("class");
+            if (slider_class == "role" || slider_class == "category"){
+                drawBpGraph(data, converttoDisplay(rel_type), true, search_item);
+            }
+            else {
+                drawChordGraph(data, converttoDisplay(rel_type), search_item);
+            }
+        }
+    //add other .get data from controller here.      
+}
+
+function navigateGraph(rel_type){
+    window.location.href = WIN_URL + '/skill_analysis/' + rel_type;
+}
+
+function converttoDisplay(type_name){  // displaying text
+  if (type_name==="category") {
+    return "Job Category";
+  }
+  else if (type_name==="role") {
+    return "Job Role";
+  }
+  else if (type_name==="skill_group"){
+    return "Skill Group";
+  }
+}
+
+function computeSlider(data, rel_type){
+    var min_weight = d3.min(data, function(d){ return d[2]; }); 
+        // max_weight = d3.max(data, function(d){ return d[2]; });
+    var max_weight;
+    if(rel_type == "role"){ max_weight = 0.06; }  //hard code max to prevent too little paths display
+    else if (rel_type == "category"){ max_weight = 0.01; }
+    else { max_weight = 0.025; }
+    
+    console.log("min_weight", min_weight);
+    console.log("max_weight", max_weight);
+    var step_num = 10;
+    var stepsize = (max_weight - min_weight) / step_num;
+    // document.getElementById("thresholdSlider").min = min_weight - stepsize.toFixed(3);
+    document.getElementById("thresholdSlider").min = min_weight;
+    document.getElementById("thresholdSlider").max = max_weight;
+    var slider_step = document.getElementById("thresholdSlider").step = stepsize.toFixed(3);
+    document.getElementById("thresholdSlider").value = min_weight;
+    $("#sliderval").text(min_weight);
+    $("#th_slider").css("opacity", 0).css("display", "inline-block").animate({ opacity: 1 }, "fast" );
+}
+</script>
+<script type="text/javascript">
+var relation_type = {{ rel_type|tojson|safe }};
+var search_item = {{ searchitem|tojson|safe }};
+var skill_list = {{ skill_list|safe }};
+
+console.log("search_item", search_item);
+initGraph(relation_type, search_item);  // render job category - topic relationship on page load
+
+// When the user scrolls down 20px from the top of the document, show the button
+window.onscroll = function() {scrollFunction()};
+
+function scrollFunction() {
+    if (document.body.scrollTop > 430 || document.documentElement.scrollTop > 430) {
+        document.getElementById("backtopBtn").style.visibility = "visible";
+        document.getElementById("backtopBtn").style.opacity = 1;
+    } else {
+        document.getElementById("backtopBtn").style.visibility = "hidden";
+        document.getElementById("backtopBtn").style.opacity = 0;
+    }
+}
+
+// When the user clicks on the button, scroll to the top of the document
+function topFunction() {
+    $('body,html').animate({ scrollTop: 0 }, 300);
+}
+
+$(function () {
+    $("#search_skill").autocomplete({
+        source: skill_list })
+    $("#button_s").click(function(d){
+    // window.location.href = WIN_URL + '/skill_analysis/role='+ $('#search_role').val();
+        // alert("This section is still under construction");
+        $.get(DATA_URL + 'skill_analysis/' + $('#search_skill').val(), function(data_raw) {
+            drawDoubleSankey(data_raw.all_skill_gp, data_raw.dom_data, data_raw.func_data, null);
+        });
+    });
+});
+
+$.get(DATA_URL + 'skill_analysis/Analytical', function(data_raw) {
+        drawDoubleSankey(data_raw.all_skill_gp, data_raw.dom_data, data_raw.func_data, null);
+    });
+</script>
+</body>
+</html>

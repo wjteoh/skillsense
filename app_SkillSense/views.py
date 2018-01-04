@@ -48,7 +48,8 @@ skills_list = sorted(skills_df.label.tolist())
 skills_id_list = sorted(skills_df.id.tolist())
 
 # for comparing resulst of Skills assigned to Skill Groups after IDF
-ch_topicskills_links_df = pd.read_csv(DATA_DIR + '/edge_TopicSkill.csv', keep_default_na=False)
+# ch_topicskills_links_df = pd.read_csv(DATA_DIR + '/edge_TopicSkill.csv', keep_default_na=False)
+ch_topicskills_links_df = pd.read_csv(DATA_DIR + '/edge_TopicSkillOneRepSkill_46_20171221-1021.csv', keep_default_na=False)
 ch_topicskills_linksIDF_df = pd.read_csv(DATA_DIR + '/edge_TopicSkillIDF.csv', keep_default_na=False)
 sg_s_optm_df = pd.read_csv(DATA_DIR + '/edge_TopicSkillOneRepSkill_46_20171221-1021.csv', keep_default_na=False)
 

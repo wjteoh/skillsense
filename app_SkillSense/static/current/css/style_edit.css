@@ -270,4 +270,15 @@ div#slideout {
         -moz-transition: all .3s;
         transition: all .3s;
     }
+    .ctntips{
+        width: 19%;
+        right: 12px;
+        font-size: 12px;
+    }
+    .ctntips h1 {
+        font-size: 19px;
+    }
+    .ctntips .padding {
+        padding: 13px;
+    }
 }

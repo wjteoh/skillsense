@@ -54,8 +54,8 @@ ch_topicskills_linksIDF_df = pd.read_csv(DATA_DIR + '/edge_TopicSkillIDF.csv', k
 sg_s_optm_df = pd.read_csv(DATA_DIR + '/edge_TopicSkillOneRepSkill_46_20171221-1021.csv', keep_default_na=False)
 
 # temporarily unused, Collapsible Tree based representation
-# json_url = DATA_DIR + '//funccategory_data_cosine_set4.json'
-# s2s_data = json.load(open(json_url))
+json_url = DATA_DIR + '/funccategory_data_cosine_set4.json'
+s2s_data = json.load(open(json_url))
 
 category_nodes_df = pd.read_csv(DATA_DIR + '/node_word2vec_1.csv', keep_default_na=False)
 category_links_df = pd.read_csv(DATA_DIR + '/edge_word2vec_1.csv', keep_default_na=False)
@@ -430,7 +430,7 @@ def getPopularJobsbyType(function):
 # Output data: Related Skills based on input skill
 # Output data type: JSON
 # for relationBipartite_Chord.html: skills force directed
-@app_Isc.route('/data/skillsnetw/<skill_name>')  
+@app_Isc.route('/data/relatedskills/<skill_name>')  
 def getRelatedSkills(skill_name):
     verbose = True;  # Disable for NON-detail printing in terminal
 
@@ -942,7 +942,7 @@ def matplotlib_barchart():
 
 @app_Isc.route('/prepNewRepSkillsVerbose/') # to assign one skill to only one skill group, from each mapping to SG, take highest weight:
 def prepNewRepSkillsVerbose():
-    sg_s_optm_df = pd.read_csv(DATA_DIR + '/edge_TopicSkillOneRepSkill_46_20171221-1021.csv', keep_default_na=False)
+    sg_s_optm_df = pd.read_csv(DATA_DIR + '/edge_TopicSkillOneRepSkill_46_20180104-1630.csv', keep_default_na=False)
     skill_count_df = pd.read_csv(DATA_DIR + '/stat_skill_2016_count_new.csv', keep_default_na=False)
     skill_count_dict = dict(zip(skill_count_df.skill_name, skill_count_df.jobs_count))
     master_list = []

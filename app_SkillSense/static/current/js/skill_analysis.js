@@ -714,7 +714,7 @@ function drawSKillsBar(target, chart_type, data, skills_h){
         .on("click", function(skill_name){
             d3.selectAll(".skills_chart_text").classed("selected_skill", false);
             d3.select(this).classed("selected_skill", true);
-            $.get(DATA_URL + 'skillsnetw/' + skill_name, function(skills_data) {
+            $.get(DATA_URL + 'relatedskills/' + skill_name, function(skills_data) {
                 var skills_data = JSON.parse(skills_data);
                 if (skills_data.skill_name != "not_found"){
                     drawSKill2Skill(skills_data);

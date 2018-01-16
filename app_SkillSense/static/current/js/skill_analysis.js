@@ -187,6 +187,7 @@ function drawBpGraph(data_arr, graph_header, is_Slider, search_item){
             g.selectAll(".mainBars").select(".perc")
                 .text(function(d){ return d3.format("0.1%")(d.percent)});
             $('.cd-panel').removeClass('is-visible');
+            $("#open").removeClass('is-visible');
             console.log("IF2");
         }
         // condition: clicked different bar when clicked bar exist
@@ -552,6 +553,7 @@ function drawChordGraph(data_arr, graph_header, search_item){
             
             d3.select("#skills_chart").attr("visibility", "hidden");
             $('.cd-panel').removeClass('is-visible');
+            $("#open").removeClass('is-visible');
             $("#skills_chart").fadeOut(200);
             setTimeout(function(){
                 $("#rel_graph").removeClass("ch_pos");
@@ -726,6 +728,7 @@ function drawSKillsBar(target, chart_type, data, skills_h){
         });
 
     $('.cd-panel').addClass('is-visible');
+    $('#open').removeClass('is-visible');
     });
 }
 
@@ -934,6 +937,15 @@ function initGraph(rel_type, search_item){
         }
     //add other .get data from controller here.      
 }
+$(function() {
+    $('#close').click(function(){
+        $('#open').addClass('is-visible');        
+    });
+    $('#open').click(function(){
+        $('.cd-panel').addClass('is-visible');
+        $(this).removeClass('is-visible');
+    });
+});
 
 function navigateGraph(rel_type){
     window.location.href = WIN_URL + '/' + rel_type;
